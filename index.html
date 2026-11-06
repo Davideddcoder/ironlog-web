@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon.svg">
-  <link rel="stylesheet" href="styles.css?v=13">
+  <link rel="stylesheet" href="styles.css?v=14">
   <title>Iron Log</title>
 </head>
 <body>
@@ -22,12 +22,12 @@
     <section id="analysisScreen" class="screen"></section>
   </main>
   <nav class="tabbar" aria-label="Navigazione">
-    <button class="tab active" data-screen="todayScreen"><i>▣</i><span>Oggi</span></button>
-    <button class="tab" data-screen="historyScreen"><i>◫</i><span>History</span></button>
-    <button class="tab" data-screen="analysisScreen"><i>↗</i><span>Analisi</span></button>
+    <button class="tab active" data-screen="todayScreen" onclick="activateScreen('today')"><i>▣</i><span>Oggi</span></button>
+    <button class="tab" data-screen="historyScreen" onclick="activateScreen('history')"><i>◫</i><span>History</span></button>
+    <button class="tab" data-screen="analysisScreen" onclick="activateScreen('analysis')"><i>↗</i><span>Analisi</span></button>
   </nav>
   <dialog id="modal"><form id="modalForm" method="dialog"><header><h2 id="modalTitle"></h2><button type="button" id="closeModal" class="icon">×</button></header><div id="modalContent"></div><footer><button type="button" id="cancelModal" class="secondary">Annulla</button><button id="saveModal">Salva</button></footer></form></dialog>
   <div id="toast" role="status"></div>
-  <script src="app.js?v=13"></script>
+  <script src="app.js?v=14"></script>
 </body>
 </html>
