@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="styles.css?v=14">
+  <title>Iron Log · Navigation Repair</title>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div><p class="kicker">IRON LOG</p><h1 id="screenTitle">Allenamenti</h1></div>
+      <button id="settingsButton" class="icon" aria-label="Impostazioni">•••</button>
+    </header>
+    <section id="todayScreen" class="screen active"></section>
+    <section id="historyScreen" class="screen"></section>
+    <section id="analysisScreen" class="screen"></section>
+  </main>
+  <nav class="tabbar" aria-label="Navigazione">
+    <button class="tab active" data-screen="todayScreen" onclick="activateScreen('today')"><i>▣</i><span>Oggi</span></button>
+    <button class="tab" data-screen="historyScreen" onclick="activateScreen('history')"><i>◫</i><span>History</span></button>
+    <button class="tab" data-screen="analysisScreen" onclick="activateScreen('analysis')"><i>↗</i><span>Analisi</span></button>
+  </nav>
+  <dialog id="modal"><form id="modalForm" method="dialog"><header><h2 id="modalTitle"></h2><button type="button" id="closeModal" class="icon">×</button></header><div id="modalContent"></div><footer><button type="button" id="cancelModal" class="secondary">Annulla</button><button id="saveModal">Salva</button></footer></form></dialog>
+  <div id="toast" role="status"></div>
+  <script src="app.js?v=14"></script>
+</body>
+</html>
+
