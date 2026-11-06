@@ -60,12 +60,12 @@ function completedFor(dayId,date){return state.sessions.find(x=>x.dayId===dayId&
 function logFor(session,exerciseId,create=false){let l=session?.logs.find(x=>x.exerciseId===exerciseId);if(!l&&create&&session){l={exerciseId,sets:[]};session.logs.push(l)}return l}
 function sessionSetCount(s){return (s?.logs||[]).reduce((n,l)=>n+l.sets.length,0)}
 function moveExercise(day,id,dir){let a=sortByOrder(day.exercises),i=a.findIndex(x=>x.id===id),j=i+dir;if(j<0||j>=a.length)return;a[i].order=j;a[j].order=i;day.exercises=a;save()}
-function render(){
-  todayView();historyView();analysisView();
-  document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===view.screen+'Screen'));
-  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.screen===view.screen+'Screen'));
-  $('#screenTitle').textContent=view.screen==='today'?'Allenamenti':view.screen==='history'?'History':'Analisi';
+function activateScreen(name){
+  view.screen=name;
+  try{todayView();historyView();analysisView();document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===name+'Screen'));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.screen===name+'Screen'));$('#screenTitle').textContent=name==='today'?'Allenamenti':name==='history'?'History':'Analisi'}catch(error){console.error(error);toast('Errore schermata: '+error.message)}
 }
+function render(){activateScreen(view.screen)}
+window.activateScreen=activateScreen;
 function todayView(){
   let r=$('#todayScreen');if(view.exerciseId)return exerciseView(r,currentExercise());if(view.dayId)return dayView(r,currentDay());
   let date=localDate(),todaySessions=state.sessions.filter(s=>s.date===date),sets=todaySessions.reduce((n,s)=>n+sessionSetCount(s),0),active=todaySessions.filter(s=>!s.completedAt).length;
@@ -96,7 +96,7 @@ function modal(title,content,submit){$('#modalTitle').textContent=title;$('#moda
 function settings(){modal('Dati e backup','<p class="note">I dati sono salvati solo su questo iPhone. Esporta periodicamente un backup.</p><button type="button" class="primary" id="export">Esporta backup</button><label>Importa backup<input id="import" type="file" accept="application/json"></label><button type="button" class="outline" id="clear">Cancella tutti i dati</button>',()=>{});$('#export').onclick=()=>{let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));a.download='ironlog-backup-'+localDate()+'.json';a.click();URL.revokeObjectURL(a.href)};$('#import').onchange=e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{let x=migrate(JSON.parse(r.result));if(!x)return toast('Backup non valido');state=x;save();$('#modal').close();toast('Backup importato')};r.readAsText(f)};$('#clear').onclick=()=>{if(confirm('Cancellare tutti i dati?')){state=seed();save();$('#modal').close()}}}
 document.addEventListener('click',e=>{let b=e.target.closest('button');if(!b)return;
   if(b.id==='settingsButton')return settings();if(['closeModal','cancelModal'].includes(b.id))return $('#modal').close();
-  if(b.dataset.screen){view.screen=b.dataset.screen.replace('Screen','');view.dayId=null;view.exerciseId=null;return render()}
+  if(b.dataset.screen){view.dayId=null;view.exerciseId=null;return activateScreen(b.dataset.screen.replace('Screen',''))}
   if(b.dataset.back){view.exerciseId=null;if(b.dataset.back==='today')view.dayId=null;return render()}
   if(b.dataset.day){view.dayId=b.dataset.day;view.exerciseId=null;view.date=null;return render()}
   if(b.dataset.ex){view.exerciseId=b.dataset.ex;return render()}
@@ -113,6 +113,6 @@ document.addEventListener('click',e=>{let b=e.target.closest('button');if(!b)ret
   if(b.dataset.a==='set'){let s=sessionFor(currentDay().id,view.date||localDate());if(!s)return toast('Avvia prima la sessione');return modal('Aggiungi serie','<div class="inline"><label>Kg<input name="weight" type="number" step="0.5" required></label><label>Reps<input name="reps" type="number" required></label></div><label>RPE<input name="rpe" type="number" min="5" max="10" step="0.5"></label><label class="checkbox"><input type="checkbox" name="warm"> Riscaldamento</label>',f=>{let l=logFor(s,currentExercise().id,true);l.sets.push({id:uid(),weight:+f.get('weight'),reps:+f.get('reps'),rpe:f.get('rpe')?+f.get('rpe'):null,warmup:f.get('warm')==='on'});save()})}
 });
 document.addEventListener('change',e=>{if(e.target.id==='sessionDate'){view.date=e.target.value||localDate();render()}});
-document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{view.screen=tab.dataset.screen.replace('Screen','');view.dayId=null;view.exerciseId=null;render()}));
-if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js?v=13');
+document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',event=>{event.preventDefault();event.stopImmediatePropagation();view.dayId=null;view.exerciseId=null;activateScreen(tab.dataset.screen.replace('Screen',''))}));
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js?v=14');
 load();
