@@ -113,5 +113,6 @@ document.addEventListener('click',e=>{let b=e.target.closest('button');if(!b)ret
   if(b.dataset.a==='set'){let s=sessionFor(currentDay().id,view.date||localDate());if(!s)return toast('Avvia prima la sessione');return modal('Aggiungi serie','<div class="inline"><label>Kg<input name="weight" type="number" step="0.5" required></label><label>Reps<input name="reps" type="number" required></label></div><label>RPE<input name="rpe" type="number" min="5" max="10" step="0.5"></label><label class="checkbox"><input type="checkbox" name="warm"> Riscaldamento</label>',f=>{let l=logFor(s,currentExercise().id,true);l.sets.push({id:uid(),weight:+f.get('weight'),reps:+f.get('reps'),rpe:f.get('rpe')?+f.get('rpe'):null,warmup:f.get('warm')==='on'});save()})}
 });
 document.addEventListener('change',e=>{if(e.target.id==='sessionDate'){view.date=e.target.value||localDate();render()}});
-if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js?v=12');
+document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{view.screen=tab.dataset.screen.replace('Screen','');view.dayId=null;view.exerciseId=null;render()}));
+if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js?v=13');
 load();
